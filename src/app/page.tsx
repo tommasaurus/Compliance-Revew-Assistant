@@ -1,52 +1,53 @@
-import Image from "next/image";
+import { Inter } from 'next/font/google';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-[#F8F9FA]">
+    <>
       {/* Top Navigation Bar */}
-      <nav className="h-14 border-b border-gray-200 bg-white flex items-center px-4">
-        <button className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <nav className="h-12 border-b border-[#E5E9EF] bg-white/90 backdrop-blur-sm flex items-center px-4 fixed w-full top-0 z-20">
+        <button className="p-1.5 hover:bg-gray-100/80 rounded-full transition-all">
+          <svg className="w-4 h-4 text-[#34495E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <div className="ml-4 flex space-x-2">
-          <button className="px-4 py-1.5 text-sm rounded-full hover:bg-gray-100 transition-colors">
-            Document 1
-          </button>
+        <div className="ml-3 flex items-center space-x-2">
+          <svg className="w-4 h-4 text-[#34495E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span className="text-sm text-[#34495E] font-medium">
+            Compliance Review
+          </span>
         </div>
       </nav>
 
-      {/* Document Area */}
-      <main className="max-w-[850px] mx-auto pt-16 pb-40">
-        {/* Document Content */}
-        <div className="bg-white shadow-sm min-h-[1100px] py-12 px-16 rounded-lg">
-          <div className="max-w-[650px] mx-auto">
-            <h1 className="text-3xl font-normal text-gray-800 mb-8">Compliance Review</h1>
-            <p className="text-[16px] leading-[1.6] text-gray-800">
-              Our proprietary investment algorithm is designed by top-tier analysts and uses cutting-edge machine learning. It guarantees consistent returns of up to 20% annually. We&apos;ve helped hundreds of investors beat the market and build generational wealth. Contact us today to learn how we can make you our next success story.
-            </p>
+      {/* Main Content */}
+      <div className="min-h-screen bg-[#F5F2EB] pt-[calc(3rem+2.5rem)] pb-24">
+        <div className="max-w-[794px] mx-auto px-4 sm:px-6 md:px-8">
+          {/* Document Content */}
+          <div className="bg-[#FCFCFD] rounded-lg border border-[#E5E9EF] shadow-[0_4px_24px_rgba(0,0,0,0.08)] h-[1000px]">
+            <div className="px-16 py-16">
+              <div className="max-w-[590px] mx-auto">
+                <div className="flex flex-col items-center mb-12">
+                  <h1 className={`${inter.className} text-[24px] font-semibold text-[#333333] tracking-[-0.01em] text-center`}>
+                    Compliance Review
+                  </h1>
+                  <div className="w-12 h-[1px] bg-[#D3D3D3] mt-4"></div>
+                </div>
+                <div className={`${inter.className}`}>
+                  <p className="text-[16px] leading-[1.6] text-[#333333]">
+                    Our proprietary investment algorithm is designed by top-tier analysts and uses cutting-edge machine learning. 
+                    <span className="bg-[#FFF9C4]/40 px-1 rounded">It guarantees consistent returns of up to 20% annually.</span> 
+                    <span className="bg-[#FFF9C4]/40 px-1 rounded">We&apos;ve helped hundreds of investors beat the market and build generational wealth.</span> 
+                    <span className="bg-[#FFF9C4]/40 px-1 rounded">Contact us today to learn how we can make you our next success story.</span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </main>
-
-      {/* Top Toolbar */}
-      <div className="fixed top-14 left-0 right-0 h-12 bg-white border-b border-gray-200 flex items-center px-4 z-10">
-        <div className="flex items-center space-x-1">
-          <button className="p-2 hover:bg-gray-100 rounded text-sm text-gray-700">
-            Templates
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded text-sm text-gray-700">
-            Meeting notes
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded text-sm text-gray-700">
-            Email draft
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded text-sm text-gray-700">
-            More
-          </button>
-        </div>
       </div>
-    </div>
+    </>
   );
 }
