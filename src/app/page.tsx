@@ -38,23 +38,23 @@ export default function Home() {
                 <div className={`${inter.className} space-y-8`}>
                   <p className="text-[16px] leading-[1.6] text-[#333333]">
                     Our proprietary investment algorithm is designed by top-tier analysts and uses cutting-edge machine learning. 
-                    <span className="bg-[#FFF9C4]/40 px-1 rounded">It guarantees consistent returns of up to 20% annually.</span> 
-                    <span className="bg-[#FFF9C4]/40 px-1 rounded">We&apos;ve helped hundreds of investors beat the market and build generational wealth.</span> 
-                    <span className="bg-[#FFF9C4]/40 px-1 rounded">Contact us today to learn how we can make you our next success story.</span>
+                    It <span className="bg-[#FFF9C4]/40 px-1 rounded">guarantees consistent returns of up to 20% annually.</span>{" "}
+                    We&apos;ve helped hundreds of investors <span className="bg-[#FFF9C4]/40 px-1 rounded">beat the market and build generational wealth.</span>{" "} 
+                    Contact us today to learn how we can <span className="bg-[#FFF9C4]/40 px-1 rounded">make you our next success story.</span>
                   </p>
 
                   <p className="text-[16px] leading-[1.6] text-[#333333]">
                     Our proprietary investment algorithm is designed by top-tier analysts and uses cutting-edge machine learning. 
-                    <span className="bg-[#FFF9C4]/40 px-1 rounded">It guarantees consistent returns of up to 20% annually.</span> 
-                    <span className="bg-[#FFF9C4]/40 px-1 rounded">We&apos;ve helped hundreds of investors beat the market and build generational wealth.</span> 
-                    <span className="bg-[#FFF9C4]/40 px-1 rounded">Contact us today to learn how we can make you our next success story.</span>
+                    It <span className="bg-[#FFF9C4]/40 px-1 rounded">guarantees consistent returns of up to 20% annually.</span>{" "}
+                    We&apos;ve helped hundreds of investors <span className="bg-[#FFF9C4]/40 px-1 rounded">beat the market and build generational wealth.</span>{" "} 
+                    Contact us today to learn how we can <span className="bg-[#FFF9C4]/40 px-1 rounded">make you our next success story.</span>
                   </p>
 
                   <p className="text-[16px] leading-[1.6] text-[#333333]">
                     Our proprietary investment algorithm is designed by top-tier analysts and uses cutting-edge machine learning. 
-                    <span className="bg-[#FFF9C4]/40 px-1 rounded">It guarantees consistent returns of up to 20% annually.</span> 
-                    <span className="bg-[#FFF9C4]/40 px-1 rounded">We&apos;ve helped hundreds of investors beat the market and build generational wealth.</span> 
-                    <span className="bg-[#FFF9C4]/40 px-1 rounded">Contact us today to learn how we can make you our next success story.</span>
+                    It <span className="bg-[#FFF9C4]/40 px-1 rounded">guarantees consistent returns of up to 20% annually.</span>{" "}
+                    We&apos;ve helped hundreds of investors <span className="bg-[#FFF9C4]/40 px-1 rounded">beat the market and build generational wealth.</span>{" "} 
+                    Contact us today to learn how we can <span className="bg-[#FFF9C4]/40 px-1 rounded">make you our next success story.</span>
                   </p>
                 </div>
               </div>
