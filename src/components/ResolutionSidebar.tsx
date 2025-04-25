@@ -15,6 +15,13 @@ interface ResolutionSidebarProps {
   onAcceptSuggestion: (violationId: string, suggestion: string) => void;
   onDismiss: (violationId: string, reason: string) => void;
   onEdit: (violationId: string, newText: string) => void;
+  resolutions: Array<{
+    id: string;
+    type: 'accepted' | 'dismissed' | 'edited';
+    originalText: string;
+    newText: string;
+    comment?: string;
+  }>;
 }
 
 export function ResolutionSidebar({
@@ -28,6 +35,7 @@ export function ResolutionSidebar({
   onAcceptSuggestion,
   onDismiss,
   onEdit,
+  resolutions,
 }: ResolutionSidebarProps) {
   return (
     <>
@@ -102,6 +110,11 @@ export function ResolutionSidebar({
                       >
                         {violation.severity}
                       </span>
+                      {resolutions.some(r => r.id === violation.id) && (
+                        <span className={styles.resolvedBadge}>
+                          Resolved
+                        </span>
+                      )}
                     </div>
                     <div className={styles.violationText}>
                       {violation.text}

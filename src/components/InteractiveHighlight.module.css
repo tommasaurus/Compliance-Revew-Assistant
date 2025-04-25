@@ -79,4 +79,67 @@
   to {
     opacity: 1;
   }
+}
+
+.highlight {
+  padding: 0 0.25rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Severity colors */
+.highlightHigh {
+  background-color: rgba(254, 226, 226, 0.6);
+}
+
+.highlightMedium {
+  background-color: rgba(255, 237, 213, 0.6);
+}
+
+.highlightLow {
+  background-color: rgba(254, 249, 195, 0.6);
+}
+
+/* Resolution colors */
+.highlightAccepted {
+  background-color: rgba(220, 252, 231, 0.6);
+}
+
+.highlightDismissed {
+  background-color: rgba(243, 244, 246, 0.6);
+}
+
+.highlightEdited {
+  background-color: rgba(219, 234, 254, 0.6);
+}
+
+.selected {
+  outline: 2px solid #60A5FA;
+  outline-offset: 1px;
+}
+
+.editInput {
+  font: inherit;
+  border: none;
+  background: transparent;
+  padding: 0 0.25rem;
+  margin: 0;
+  min-width: 50px;
+  outline: 2px solid #60A5FA;
+  outline-offset: 1px;
+  transition: width 0.1s ease;
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  resize: vertical;
+  min-height: 24px;
+  max-height: 300px;
+  overflow-y: auto;
+  line-height: inherit;
+}
+
+.editInput:focus {
+  outline: 2px solid #2563EB;
 } 

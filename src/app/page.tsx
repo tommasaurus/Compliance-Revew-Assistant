@@ -36,33 +36,72 @@ export default function Home() {
   };
 
   const handleAcceptSuggestion = (violationId: string, suggestion: string) => {
-    setResolutions(prev => [...prev, {
-      id: violationId,
-      type: 'accepted',
-      originalText: violations.find(v => v.id === violationId)?.text || '',
-      newText: suggestion
-    }]);
+    setResolutions(prev => {
+      const existingIndex = prev.findIndex(r => r.id === violationId);
+      const newResolution = {
+        id: violationId,
+        type: 'accepted' as const,
+        originalText: violations.find(v => v.id === violationId)?.text || '',
+        newText: suggestion
+      };
+
+      if (existingIndex !== -1) {
+        // Replace existing resolution
+        const newResolutions = [...prev];
+        newResolutions[existingIndex] = newResolution;
+        return newResolutions;
+      } else {
+        // Add new resolution
+        return [...prev, newResolution];
+      }
+    });
     setExpandedViolation(null);
   };
 
   const handleDismiss = (violationId: string, comment: string) => {
-    setResolutions(prev => [...prev, {
-      id: violationId,
-      type: 'dismissed',
-      originalText: violations.find(v => v.id === violationId)?.text || '',
-      newText: violations.find(v => v.id === violationId)?.text || '',
-      comment
-    }]);
+    setResolutions(prev => {
+      const existingIndex = prev.findIndex(r => r.id === violationId);
+      const newResolution = {
+        id: violationId,
+        type: 'dismissed' as const,
+        originalText: violations.find(v => v.id === violationId)?.text || '',
+        newText: violations.find(v => v.id === violationId)?.text || '',
+        comment
+      };
+
+      if (existingIndex !== -1) {
+        // Replace existing resolution
+        const newResolutions = [...prev];
+        newResolutions[existingIndex] = newResolution;
+        return newResolutions;
+      } else {
+        // Add new resolution
+        return [...prev, newResolution];
+      }
+    });
     setExpandedViolation(null);
   };
 
   const handleEdit = (violationId: string, newText: string) => {
-    setResolutions(prev => [...prev, {
-      id: violationId,
-      type: 'edited',
-      originalText: violations.find(v => v.id === violationId)?.text || '',
-      newText
-    }]);
+    setResolutions(prev => {
+      const existingIndex = prev.findIndex(r => r.id === violationId);
+      const newResolution = {
+        id: violationId,
+        type: 'edited' as const,
+        originalText: violations.find(v => v.id === violationId)?.text || '',
+        newText
+      };
+
+      if (existingIndex !== -1) {
+        // Replace existing resolution
+        const newResolutions = [...prev];
+        newResolutions[existingIndex] = newResolution;
+        return newResolutions;
+      } else {
+        // Add new resolution
+        return [...prev, newResolution];
+      }
+    });
     setExpandedViolation(null);
   };
 
@@ -87,7 +126,7 @@ export default function Home() {
 
       {/* Main Content Area */}
       <main className="flex-1 overflow-auto">
-        <div className="max-w-[794px] mx-auto px-4 py-8">
+        <div className="max-w-[794px] mx-auto px-4 py-8 min-h-[100vh]">
           <div className="bg-[#FCFCFD] border border-[#E5E9EF] shadow-[0_4px_24px_rgba(0,0,0,0.28)] min-h-[1000px]">
             <div className="px-16 pt-[36px] pb-16">
               <div className="max-w-[590px] mx-auto">
@@ -106,11 +145,14 @@ export default function Home() {
                     onViolationSelect={handleViolationSelect}
                     selectedViolationId={selectedViolation}
                     isOpen={isSidebarOpen}
+                    onAcceptSuggestion={handleAcceptSuggestion}
+                    onEdit={handleEdit}
                   />
                 </div>
               </div>
             </div>
           </div>
+          <div className="h-[500px]"></div>
         </div>
       </main>
 
@@ -130,6 +172,7 @@ export default function Home() {
         onAcceptSuggestion={handleAcceptSuggestion}
         onDismiss={handleDismiss}
         onEdit={handleEdit}
+        resolutions={resolutions}
       />
     </div>
   );

@@ -35,6 +35,8 @@ interface InteractiveHighlightProps {
   onViolationSelect: (violationId: string | null) => void;
   selectedViolationId: string | null;
   isOpen: boolean;
+  onAcceptSuggestion: (violationId: string, suggestion: string) => void;
+  onEdit: (violationId: string, newText: string) => void;
 }
 
 const POPOVER_WIDTH = 400;
@@ -47,9 +49,16 @@ export function InteractiveHighlight({
   resolutions,
   onViolationSelect,
   selectedViolationId,
-  isOpen
+  isOpen,
+  onAcceptSuggestion,
+  onEdit
 }: InteractiveHighlightProps) {
   const [hoveredViolation, setHoveredViolation] = useState<string | null>(null);
+  const [editingViolation, setEditingViolation] = useState<string | null>(null);
+  const [editText, setEditText] = useState('');
+  const editInputRef = useRef<HTMLTextAreaElement>(null);
+  const [inputWidth, setInputWidth] = useState<number>(0);
+  const measureRef = useRef<HTMLDivElement>(null);
   const [popoverPosition, setPopoverPosition] = useState({ 
     top: 0,
     left: 0,
@@ -58,6 +67,23 @@ export function InteractiveHighlight({
   const containerRef = useRef<HTMLDivElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (editingViolation && editInputRef.current) {
+      editInputRef.current.focus();
+      editInputRef.current.select();
+    }
+  }, [editingViolation]);
+
+  // Update input width when text changes
+  useEffect(() => {
+    if (measureRef.current && containerRef.current) {
+      const containerWidth = containerRef.current.offsetWidth;
+      const textWidth = measureRef.current.offsetWidth;
+      // Limit width to container width
+      setInputWidth(Math.min(textWidth + 20, containerWidth - 40)); // 40px for padding
+    }
+  }, [editText]);
 
   // Reset hover state when sidebar closes
   useEffect(() => {
@@ -117,15 +143,38 @@ export function InteractiveHighlight({
     return { top, left, isTopSide };
   };
 
-  const getHighlightColor = (violationId: string) => {
-    const resolution = resolutions.find(r => r.id === violationId);
-    if (!resolution) return 'bg-[#FFF9C4]/40';
-    switch (resolution.type) {
-      case 'accepted': return 'bg-green-100';
-      case 'dismissed': return 'bg-gray-100';
-      case 'edited': return 'bg-blue-100';
-      default: return 'bg-[#FFF9C4]/40';
+  const getSeverityClass = (severity: 'high' | 'medium' | 'low') => {
+    switch (severity) {
+      case 'high': return styles.highlightHigh;
+      case 'medium': return styles.highlightMedium;
+      case 'low': return styles.highlightLow;
+      default: return '';
     }
+  };
+
+  const getHighlightClass = (violationId: string) => {
+    const resolution = resolutions.find(r => r.id === violationId);
+    const violation = violations.find(v => v.id === violationId);
+    
+    let classes = [styles.highlight];
+    
+    if (resolution) {
+      switch (resolution.type) {
+        case 'accepted':
+          classes.push(styles.highlightAccepted);
+          break;
+        case 'dismissed':
+          classes.push(styles.highlightDismissed);
+          break;
+        case 'edited':
+          classes.push(styles.highlightEdited);
+          break;
+      }
+    } else if (violation) {
+      classes.push(getSeverityClass(violation.severity));
+    }
+    
+    return classes.join(' ');
   };
 
   const handlePopoverEnter = () => {
@@ -136,51 +185,105 @@ export function InteractiveHighlight({
     setHoveredViolation(null);
   };
 
+  const handleStartEdit = (violationId: string, currentText: string) => {
+    setEditingViolation(violationId);
+    setEditText(currentText);
+    setHoveredViolation(null);
+  };
+
+  const handleFinishEdit = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey && editingViolation && editText.trim()) {
+      e.preventDefault(); // Prevent newline
+      onEdit(editingViolation, editText);
+      setEditingViolation(null);
+      setEditText('');
+    } else if (e.key === 'Escape') {
+      setEditingViolation(null);
+      setEditText('');
+    }
+  };
+
   return (
     <div className="space-y-8">
+      {/* Hidden measure element */}
+      <div
+        ref={measureRef}
+        style={{
+          visibility: 'hidden',
+          position: 'absolute',
+          whiteSpace: 'pre-wrap',
+          fontSize: '16px',
+          lineHeight: '1.6',
+          padding: '0 0.25rem',
+          maxWidth: '100%'
+        }}
+      >
+        {editText}
+      </div>
+
       {/* Document Content */}
       <div
         ref={containerRef}
-        className="text-[16px] leading-[1.6] text-[#333333] relative z-0"
+        className="text-[16px] leading-[1.6] text-[#333333] relative z-0 max-w-[800px]"
       >
         {violations.sort((a, b) => a.start - b.end).map((violation, index, sortedViolations) => {
           const isSelected = selectedViolationId === violation.id;
           const resolution = resolutions.find(r => r.id === violation.id);
           const previousEnd = index === 0 ? 0 : sortedViolations[index - 1].end;
           const textBeforeViolation = text.slice(previousEnd, violation.start);
+          const isEditing = editingViolation === violation.id;
+          const currentText = resolution ? resolution.newText : violation.text;
 
           return (
             <React.Fragment key={violation.id}>
               {textBeforeViolation}
-              <span
-                className={`${getHighlightColor(violation.id)} px-1 rounded cursor-pointer relative
-                  ${isSelected ? 'ring-2 ring-blue-400' : ''}`}
-                onMouseEnter={(e) => {
-                  if (!isOpen) {
-                    if (leaveTimeoutRef.current) clearTimeout(leaveTimeoutRef.current);
-                    setHoveredViolation(violation.id);
-                    const position = calculatePopoverPosition(e);
-                    setPopoverPosition(position);
-                  }
-                }}
-                onMouseLeave={() => {
-                  if (!isOpen && hoveredViolation === violation.id) {
-                    leaveTimeoutRef.current = setTimeout(() => {
-                      setHoveredViolation(null);
-                    }, 300);
-                  }
-                }}
-                onClick={() => onViolationSelect(violation.id)}
-              >
-                {resolution ? resolution.newText : violation.text}
-              </span>
+              {isEditing ? (
+                <textarea
+                  ref={editInputRef}
+                  value={editText}
+                  onChange={(e) => setEditText(e.target.value)}
+                  onKeyDown={handleFinishEdit}
+                  onBlur={() => {
+                    setEditingViolation(null);
+                    setEditText('');
+                  }}
+                  className={`${styles.editInput} ${getHighlightClass(violation.id)}`}
+                  style={{ 
+                    width: `${inputWidth}px`,
+                    minHeight: '24px',
+                    height: 'auto'
+                  }}
+                />
+              ) : (
+                <span
+                  className={`${getHighlightClass(violation.id)} ${isSelected ? styles.selected : ''}`}
+                  onMouseEnter={(e) => {
+                    if (!isOpen) {
+                      if (leaveTimeoutRef.current) clearTimeout(leaveTimeoutRef.current);
+                      setHoveredViolation(violation.id);
+                      const position = calculatePopoverPosition(e);
+                      setPopoverPosition(position);
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (!isOpen && hoveredViolation === violation.id) {
+                      leaveTimeoutRef.current = setTimeout(() => {
+                        setHoveredViolation(null);
+                      }, 300);
+                    }
+                  }}
+                  onClick={() => handleStartEdit(violation.id, currentText)}
+                >
+                  {currentText}
+                </span>
+              )}
               {index === sortedViolations.length - 1 && text.slice(violation.end)}
             </React.Fragment>
           );
         })}
 
         {/* Suggestions Popover */}
-        {hoveredViolation && !isOpen && (
+        {hoveredViolation && !isOpen && !editingViolation && (
           <div
             ref={popoverRef}
             className={styles.popoverContainer}
@@ -198,14 +301,13 @@ export function InteractiveHighlight({
               initial={{ opacity: 0, y: popoverPosition.isTopSide ? 5 : -5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: popoverPosition.isTopSide ? 5 : -5 }}
-              transition={{ duration: 0.2 }}
             >
-              {suggestions[hoveredViolation].map((suggestion, i) => (
+              {suggestions[hoveredViolation]?.map((suggestion, index) => (
                 <button
-                  key={i}
+                  key={index}
                   className={styles.suggestionButton}
                   onClick={() => {
-                    onViolationSelect(hoveredViolation);
+                    onAcceptSuggestion(hoveredViolation, suggestion);
                     setHoveredViolation(null);
                   }}
                 >
