@@ -1,0 +1,380 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 400px;
+  background-color: white;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  border-left: 1px solid #E5E9EF;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  height: 3.5rem;
+  border-bottom: 1px solid #E5E9EF;
+  background: #FCFCFD;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.title h2 {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1F2937;
+}
+
+.count {
+  padding: 0.125rem 0.5rem;
+  background-color: #F3F4F6;
+  color: #6B7280;
+  font-size: 0.875rem;
+  border-radius: 9999px;
+}
+
+.closeButton {
+  position: absolute;
+  top: 50%;
+  left: -20px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 40px;
+  background-color: white;
+  border: 1px solid #E5E9EF;
+  border-right: none;
+  border-radius: 20px 0 0 20px;
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.05);
+  transition: background-color 0.2s;
+  z-index: 49;
+  cursor: pointer;
+}
+
+.closeButton:hover {
+  background-color: #F9FAFB;
+}
+
+.closeButton svg {
+  transform: scale(3);
+  color: #6B7280;
+  padding-left: 2px;  
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.content > * + * {
+  margin-top: 1rem;
+}
+
+.violationItem {
+  border: 1px solid #E5E9EF;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.violationHeader {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.violationHeader:hover {
+  background-color: #F9FAFB;
+}
+
+.violationType {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1F2937;
+}
+
+.violationSeverity {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+}
+
+.violationSeverity[data-severity="high"] {
+  background-color: #FEF2F2;
+  color: #DC2626;
+}
+
+.violationSeverity[data-severity="medium"] {
+  background-color: #FFF7ED;
+  color: #EA580C;
+}
+
+.violationSeverity[data-severity="low"] {
+  background-color: #FEFCE8;
+  color: #CA8A04;
+}
+
+.violationText {
+  font-size: 0.875rem;
+  color: #4B5563;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.violationMessage {
+  font-size: 0.75rem;
+  color: #6B7280;
+  font-style: italic;
+}
+
+.expandIcon {
+  width: 1rem;
+  height: 1rem;
+  color: #9CA3AF;
+  transform: rotate(0deg);
+  transition: transform 0.2s;
+}
+
+.expandIcon.expanded {
+  transform: rotate(90deg);
+}
+
+.violationDetails {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #E5E9EF;
+  background-color: #F9FAFB;
+}
+
+.suggestions {
+  margin-bottom: 1rem;
+}
+
+.suggestions > * + * {
+  margin-top: 0.5rem;
+}
+
+.suggestion {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  text-align: left;
+  background-color: white;
+  border: 1px solid #E5E9EF;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+}
+
+.suggestion:hover {
+  background-color: #F9FAFB;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.editButton,
+.dismissButton {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s;
+  background-color: white;
+  border: 1px solid #E5E9EF;
+  color: #1F2937;
+}
+
+.editButton:hover,
+.dismissButton:hover {
+  background-color: #F9FAFB;
+}
+
+.expandButton {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background-color: white;
+  border: 1px solid #E5E9EF;
+  border-right: none;
+  border-radius: 0.5rem 0 0 0.5rem;
+  box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.08);
+  transition: background-color 0.2s;
+  z-index: 50;
+}
+
+.expandButton:hover {
+  background-color: #F9FAFB;
+}
+
+.expandButtonIcon {
+  width: 1rem;
+  height: 1rem;
+  color: #6B7280;
+}
+
+.expandButtonText {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #1F2937;
+}
+
+.tabs {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid #E1E4E8;
+}
+
+.tab {
+  padding: 0.5rem 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  position: relative;
+  transition: color 0.2s;
+}
+
+.tabActive {
+  color: #D32F2F;
+}
+
+.tabActive::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #D32F2F;
+}
+
+.tabInactive {
+  color: #6E7781;
+}
+
+.tabInactive:hover {
+  color: #24292E;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.section:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #24292E;
+  margin-bottom: 0.75rem;
+}
+
+.message {
+  font-size: 0.875rem;
+  color: #57606A;
+  line-height: 1.5;
+  margin-top: 0.5rem;
+}
+
+.suggestionButton {
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem;
+  border: 1px solid #E1E4E8;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: #24292E;
+  transition: all 0.2s;
+  margin-bottom: 0.5rem;
+}
+
+.suggestionButton:hover {
+  background-color: #F6F8FA;
+  border-color: #D1D5DA;
+}
+
+.textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #E1E4E8;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.textarea::placeholder {
+  color: #6E7781;
+}
+
+.actionButton {
+  width: 100%;
+  padding: 0.625rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: #F6F8FA;
+  border: 1px solid #E1E4E8;
+  transition: all 0.2s;
+}
+
+.actionButton:hover {
+  background-color: #F3F4F6;
+}
+
+.actionButton:active {
+  transform: scale(0.98);
+}
+
+/* Custom scrollbar */
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #D1D5DA;
+  border-radius: 9999px;
+  border: 2px solid #FAFBFC;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: #A0A6AD;
+} 
