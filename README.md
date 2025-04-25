@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Compliance Copy Review Assistant
 
-## Getting Started
+This front-end prototype assists compliance professionals in reviewing flagged language in marketing copy efficiently. Designed for high-frequency use (hundreds of reviews daily), it emphasizes speed, clarity, and minimal friction.
 
-First, run the development server:
+## Setup Instructions
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+To run locally:  
+1. Install dependencies:  
+   ```bash
+   npm install
+   ```  
+2. Start the development server:  
+   ```bash
+   npm run dev
+   ```  
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+View the deployed version here:  
+[https://compliance-revew-assistant.vercel.app/](https://compliance-revew-assistant.vercel.app/)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## UX Decisions: Prioritizing Efficiency and Intuition
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The tool’s design caters to compliance professionals needing to review and act on flagged text quickly. Below is an explanation of the design process, discarded alternatives, and the chosen approach.
 
-## Learn More
+### Initial Options and Why They Were Discarded
 
-To learn more about Next.js, take a look at the following resources:
+Several design ideas were considered but rejected due to inefficiencies:  
+- **Inline Editing with Dropdowns**:  
+  Dropdowns work for isolated edits but become clunky when violations are close together, risking overlapping UI elements and user frustration.  
+- **Modal Popups**:  
+  Modals disrupt workflow by obscuring the text and prevent simultaneous viewing of multiple violations, critical for context.  
+- **Drag-and-Drop Suggestions**:  
+  This was too slow and impractical for dense text, requiring precise movements that hinder rapid reviews.  
+- **Visual Diff**:  
+  Better suited for final comparisons than real-time decision-making, it didn’t fit the primary interaction flow.  
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+These were set aside for a solution that better supports speed and usability.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Chosen Design: Hover Apply + Sidebar
 
-## Deploy on Vercel
+The final design combines two complementary interaction patterns:  
+1. **Hover for Speed**:  
+   - Hovering over a highlighted violation displays a popover with three suggested replacements. Clicking a suggestion applies it instantly.  
+   - **Reasoning**: Users naturally hover over items they want to inspect or edit. By showing suggestions on hover, the tool anticipates this action, enabling the most frequent task (accepting suggestions) with minimal effort.  
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. **Click for Flexibility via Sidebar**:  
+   - On page load, the sidebar is open by default, listing all violations with severity (color-coded: red for high, orange for medium, yellow for low).  
+   - Clicking a highlight or sidebar item selects the violation, opening a panel with detailed info and actions: accept a suggestion, dismiss (with a comment), or edit inline.  
+   - **Reasoning**: The sidebar provides an overview and handles less common, detailed tasks without cluttering the text area. When closed, hover popovers maintain quick access to suggestions.  
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This dual system—hover for rapid actions, click for deeper control—optimizes the workflow for both efficiency and flexibility.
+
+### Supporting Features
+
+- **Keyboard Shortcuts**:  
+  - Arrow keys cycle through violations, Enter triggers inline editing or applies changes, and Escape closes the sidebar.  
+  - These cater to power users, speeding up navigation and actions.  
+
+- **Toast Notifications**:  
+  - Brief confirmations appear after actions (e.g., accepting a suggestion), ensuring users know changes succeeded.  
+
+- **Color-Coded Severity**:  
+  - Highlights use red, orange, and yellow to indicate severity, helping users prioritize critical issues quickly.  
+
+- **Key Guide**:  
+  - A guide introduces shortcuts and hover functionality, making the tool intuitive for new users.  
+
+### Design Rationale
+
+- **User Behavior**:  
+  Hovering and clicking are intuitive first steps for examining violations. The design leverages this to streamline actions.  
+- **Balance**:  
+  The open sidebar offers an immediate overview, while hover popovers keep quick edits accessible when it’s closed.  
+- **Accessibility**:  
+  Features like shortcuts and notifications support both novice and expert users, enhancing overall usability.
+
+## Known Limitations
+
+1. **Hover Discoverability**  
+   - New users might not immediately notice the hover popover for quick actions (e.g., accepting suggestions). Additional onboarding cues or tooltips could improve discoverability for first-time users.
+
+2. **No Edit Locking or Conflict Prevention**  
+   - In a multi-user environment, there’s no mechanism to lock inline editing fields or prevent conflicts if multiple users edit the same document simultaneously. This could lead to overwritten changes or confusion in collaborative settings.
+
+3. **Limited Undo Support**  
+   - After making an inline edit or dismissing a suggestion, there’s no clear way to undo the action beyond manual retyping or reopening the sidebar. This increases the risk of errors, especially during rapid edits.
+
+4. **No Bulk Dismissal or Acceptance**  
+   - Users cannot select multiple violations (e.g., low-priority ones) and dismiss or accept them in bulk. Each violation requires individual interaction via the sidebar, which can be tedious for documents with many minor issues.
+
+5. **Potential User Overwhelm from Sidebar and Key Guide**  
+   - The always-open sidebar and the key guide, while helpful, might overwhelm new users with too much information at once. Streamlining or collapsing these elements by default could improve the initial user experience.
+
+6. **Dismissal Friction**  
+   - Requiring comments for dismissals adds an extra step that might slow users down, especially for frequent dismissals. Predefined comment options or a quicker dismissal flow could reduce this friction.
