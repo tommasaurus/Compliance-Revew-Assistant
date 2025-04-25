@@ -1,0 +1,82 @@
+.popoverContainer {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.popoverContent {
+  width: 400px;
+  background: rgba(255, 255, 255, 0.99);
+  border-radius: 10px;
+  padding: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.02),
+    0 4px 8px rgba(0, 0, 0, 0.02),
+    0 8px 16px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  will-change: transform, opacity;
+  pointer-events: auto;
+}
+
+.popoverContent::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.08));
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.suggestionButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  margin: 2px 0;
+  border-radius: 6px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  position: relative;
+  pointer-events: auto;
+}
+
+.suggestionButton:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.suggestionButton:active {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.suggestionButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    transparent 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+
+.suggestionButton:hover::before {
+  transform: translateX(0);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+} 
