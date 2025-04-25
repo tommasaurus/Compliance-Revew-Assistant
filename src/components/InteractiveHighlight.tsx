@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import styles from './InteractiveHighlight.module.css';
 
 interface Violation {
@@ -156,7 +156,7 @@ export function InteractiveHighlight({
     const resolution = resolutions.find(r => r.id === violationId);
     const violation = violations.find(v => v.id === violationId);
     
-    let classes = [styles.highlight];
+    const classes = [styles.highlight];
     
     if (resolution) {
       switch (resolution.type) {
@@ -272,7 +272,10 @@ export function InteractiveHighlight({
                       }, 300);
                     }
                   }}
-                  onClick={() => handleStartEdit(violation.id, currentText)}
+                  onClick={() => {
+                    handleStartEdit(violation.id, currentText);
+                    onViolationSelect(violation.id);
+                  }}
                 >
                   {currentText}
                 </span>

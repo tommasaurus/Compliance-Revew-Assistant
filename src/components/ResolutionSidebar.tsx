@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './ResolutionSidebar.module.css';
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Violation, Suggestions } from '@/lib/types';
 
 interface ResolutionSidebarProps {
@@ -34,7 +34,7 @@ export function ResolutionSidebar({
   onExpandViolation,
   onAcceptSuggestion,
   onDismiss,
-  onEdit,
+
   resolutions,
 }: ResolutionSidebarProps) {
   return (
@@ -103,21 +103,29 @@ export function ResolutionSidebar({
                     )}
                   >
                     <div className={styles.violationType}>
-                      {violation.type}
+                      <span>{violation.type}</span>
                       <span 
                         className={styles.violationSeverity}
                         data-severity={violation.severity}
                       >
+                        {violation.severity === 'high' && (
+                          <ExclamationTriangleIcon className="w-3 h-3" />
+                        )}
                         {violation.severity}
                       </span>
-                      {resolutions.some(r => r.id === violation.id) && (
+                      {resolutions.some(r => r.id === violation.id && (r.type === 'accepted' || r.type === 'edited')) && (
                         <span className={styles.resolvedBadge}>
                           Resolved
                         </span>
                       )}
+                      {resolutions.some(r => r.id === violation.id && r.type === 'dismissed') && (
+                        <span className={styles.dismissedBadge}>
+                          Dismissed
+                        </span>
+                      )}
                     </div>
                     <div className={styles.violationText}>
-                      {violation.text}
+                        &quot;{violation.text}&quot;
                     </div>
                     <div className={styles.violationMessage}>
                       {violation.message}
@@ -154,25 +162,46 @@ export function ResolutionSidebar({
                           ))}
                         </div>
 
-                        <div className={styles.actions}>
-                          <button
-                            className={styles.editButton}
-                            onClick={() => {
-                              const newText = prompt('Enter new text:', violation.text);
-                              if (newText) onEdit(violation.id, newText);
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className={styles.dismissButton}
-                            onClick={() => {
-                              const reason = prompt('Enter reason for dismissal:');
-                              if (reason) onDismiss(violation.id, reason);
-                            }}
-                          >
-                            Dismiss
-                          </button>
+                        <div className={styles.dismissSection}>
+                          {resolutions.some(r => r.id === violation.id && r.type === 'dismissed') ? (
+                            <div className={styles.dismissReason}>
+                              <div className={styles.dismissReasonLabel}>Dismiss reason:</div>
+                              <div className={styles.dismissReasonText}>
+                                {resolutions.find(r => r.id === violation.id && r.type === 'dismissed')?.comment}
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <textarea
+                                className={styles.dismissInput}
+                                placeholder="Enter reason for dismissal..."
+                                rows={3}                                
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    const reason = e.currentTarget.value.trim();
+                                    if (reason) {
+                                      onDismiss(violation.id, reason);
+                                      e.currentTarget.value = '';
+                                    }
+                                  }
+                                }}
+                              />
+                              <button
+                                className={styles.actionButton}
+                                onClick={(e) => {
+                                  const textarea = e.currentTarget.parentElement?.querySelector('textarea');
+                                  const reason = textarea?.value.trim();
+                                  if (reason) {
+                                    onDismiss(violation.id, reason);
+                                    if (textarea) textarea.value = '';
+                                  }
+                                }}
+                              >
+                                Dismiss
+                              </button>
+                            </>
+                          )}
                         </div>
                       </motion.div>
                     )}

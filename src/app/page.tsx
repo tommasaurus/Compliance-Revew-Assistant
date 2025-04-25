@@ -108,18 +108,10 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Navigation Bar */}
-      <nav className="h-12 border-b border-[#E5E9EF] bg-white/90 backdrop-blur-sm flex items-center px-4 sticky top-0 z-20">        
-        <button className="p-1.5 hover:bg-gray-100/80 rounded-full transition-all">
-          <svg className="w-4 h-4 text-[#34495E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-        <div className="ml-3 flex items-center space-x-2">
-          <svg className="w-4 h-4 text-[#34495E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
-          <span className="text-sm text-[#34495E] font-medium">
-            Compliance Review
+      <nav className="h-[2.8rem] border-b border-[#E5E9EF] bg-white/90 backdrop-blur-sm flex items-center px-6 sticky top-0 z-20">        
+        <div className="flex items-center ml-[10px]">
+          <span className={`${inter.className} text-[1.3rem] font-[extrabold] tracking-tight text-[#1F2937]`}>
+            Compliance<span className="font-bold text-[#4B5563]">Review</span>
           </span>
         </div>
       </nav>
