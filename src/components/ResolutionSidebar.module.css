@@ -87,18 +87,28 @@
 
 .violationItem {
   background: white;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-  border: 1px solid rgba(229, 233, 239, 0.4);
-  transition: all 0.2s ease;
+  border-radius: 12px;
   margin-bottom: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid #E5E9EF;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.violationItem[data-selected="true"] {
+  background: #f8fafc;
+  border-color: #60a5fa;
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.1);
+  transform: translateX(-4px);
 }
 
 .violationItem:hover {
   transform: translateY(-1px);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.02);
-  border-color: rgba(229, 233, 239, 0.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.violationItem[data-selected="true"]:hover {
+  transform: translateX(-4px) translateY(-1px);
 }
 
 .violationHeader {
@@ -109,85 +119,94 @@
   gap: 8px;
   text-align: left;
   background: white;
-  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
-.violationHeader:hover {
-  background-color: #F9FAFB;
+.violationHeader:active {
+  background: white !important;
+}
+
+.violationHeader:focus {
+  outline: none;
+}
+
+.violationHeader:focus-visible {
+  outline: 2px solid #60A5FA;
+  outline-offset: -2px;
 }
 
 .violationType {
   display: flex;
   align-items: center;
-  gap: 0;
-  font-size: 15px;
-  font-weight: 600;
-  color: #1F2937;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-}
-
-.violationSeverity {
-  display: inline-flex;
-  align-items: center;
-  padding: 3.5px 10px;
-  margin-left: 6px;
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 12px;
-  color: white;
-  text-transform: uppercase;
-  line-height: 14px;
-}
-
-.violationSeverity[data-severity="high"] {
-  background-color: #E57373;
-}
-
-.violationSeverity[data-severity="medium"] {
-  background-color: #fcc137;
-}
-
-.violationSeverity[data-severity="low"] {
-  background-color: #fff06b;
-  color: #7b7e83;
+  gap: 8px;
+  font-weight: 500;
+  color: #111827;
 }
 
 .violationText {
-  font-size: 13px;
   color: #4B5563;
+  font-size: 0.9375rem;
   line-height: 1.5;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin-bottom: 6px;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
 .violationMessage {
-  font-size: 12px;
   color: #6B7280;
+  font-size: 0.875rem;
   font-style: italic;
-  line-height: 1.4;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-}
-
-.expandIcon {
-  width: 1rem;
-  height: 1rem;
-  color: #9CA3AF;
-  transform: rotate(0deg);
-  transition: transform 0.2s;
-}
-
-.expandIcon.expanded {
-  transform: rotate(90deg);
 }
 
 .violationDetails {
   padding: 16px 20px;
-  border-top: 1px solid rgba(229, 233, 239, 0.3);
-  background-color: rgba(250, 250, 250, 0.5);
+  border-top: 1px solid #E5E9EF;
+  background-color: #F9FAFB;
+}
+
+.violationSeverity {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.violationSeverity[data-severity="high"] {
+  background-color: #FEF2F2;
+  color: #DC2626;
+}
+
+.violationSeverity[data-severity="medium"] {
+  background-color: #FFF7ED;
+  color: #EA580C;
+}
+
+.violationSeverity[data-severity="low"] {
+  background-color: #FEFCE8;
+  color: #CA8A04;
+}
+
+.resolvedBadge {
+  padding: 2px 8px;
+  background-color: #F0FDF4;
+  color: #16A34A;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.dismissedBadge {
+  padding: 2px 8px;
+  background-color: #F3F4F6;
+  color: #6B7280;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
 }
 
 .suggestions {
@@ -214,7 +233,7 @@
 }
 
 .suggestion:hover {
-  background-color: #FAFAFA;
+  background-color: #d8d8d8;
   border-color: rgba(229, 233, 239, 0.6);
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
@@ -383,13 +402,20 @@
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
-.actionButton:hover {
+.actionButton:not(:disabled):hover {
   background-color: #DC2626;
   transform: translateY(-1px);
 }
 
-.actionButton:active {
+.actionButton:not(:disabled):active {
   transform: scale(0.98);
+}
+
+.actionButtonDisabled {
+  background-color: #bcbcbc;
+  color: #d85757;
+  cursor: not-allowed;
+  border: 1px solid #E5E7EB;
 }
 
 /* Custom scrollbar */
@@ -409,20 +435,6 @@
 
 .sidebar::-webkit-scrollbar-thumb:hover {
   background-color: #A0A6AD;
-}
-
-.resolvedBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3.5px 10px;
-  margin-left: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  color: white;
-  background-color: #81C784;
-  border-radius: 12px;
-  text-transform: uppercase;
-  line-height: 14px;
 }
 
 .dismissSection {
@@ -454,20 +466,6 @@
   color: #9CA3AF;
 }
 
-.dismissedBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3.5px 10px;
-  margin-left: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  color: white;
-  background-color: #94A3B8;
-  border-radius: 12px;
-  text-transform: uppercase;
-  line-height: 14px;
-}
-
 .dismissReason {
   background-color: #F8FAFC;
   border: 1px solid #E5E9EF;
@@ -491,4 +489,20 @@
   line-height: 1.5;
   white-space: pre-wrap;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+.toast {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+
+.toast strong {
+  font-weight: 600;
+}
+
+.toast span {
+  font-size: 0.75rem;
+  opacity: 0.9;
 }

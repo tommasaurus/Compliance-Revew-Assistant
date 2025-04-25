@@ -47,7 +47,7 @@
 }
 
 .suggestionButton:hover {
-  background: rgba(0, 0, 0, 0.03);
+  background: rgba(20, 16, 8, 0.07);
 }
 
 .suggestionButton:active {
@@ -119,27 +119,95 @@
   outline-offset: 1px;
 }
 
+.editContainer {
+  display: inline;
+  position: relative;
+}
+
 .editInput {
-  font: inherit;
-  border: none;
-  background: transparent;
-  padding: 0 0.25rem;
-  margin: 0;
-  min-width: 50px;
-  outline: 2px solid #60A5FA;
-  outline-offset: 1px;
-  transition: width 0.1s ease;
-  display: block;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  resize: vertical;
-  min-height: 24px;
-  max-height: 300px;
-  overflow-y: auto;
+  font-family: inherit;
+  font-size: inherit;
   line-height: inherit;
+  padding: 0.25rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.25rem;
+  background: white;
+  width: auto;
+  resize: none;
+  display: inline;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  vertical-align: bottom;
 }
 
 .editInput:focus {
-  outline: 2px solid #2563EB;
+  outline: none;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
+}
+
+.editButtons {
+  display: inline-flex;
+  flex-direction: row;
+  gap: 0.25rem;
+  margin-left: 0.5rem;
+  vertical-align: bottom;
+}
+
+.editButton {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.25rem;
+  border: none;
+  cursor: pointer;
+  color: white;
+  font-size: 14px;
+  transition: all 0.2s;
+  vertical-align: bottom;
+}
+
+.acceptButton {
+  background-color: #22c55e;
+}
+
+.acceptButton:hover {
+  background-color: #16a34a;
+}
+
+.cancelButton {
+  background-color: #ef4444;
+}
+
+.cancelButton:hover {
+  background-color: #dc2626;
+}
+
+.measureText {
+  position: absolute;
+  visibility: hidden;
+  white-space: pre-wrap;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  padding: 2px 4px;
+}
+
+.toast {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.875rem;
+}
+
+.toast strong {
+  font-weight: 600;
+}
+
+.toast span {
+  font-size: 0.75rem;
+  opacity: 0.9;
 } 

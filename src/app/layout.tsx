@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AnimatedGridPattern } from "@/components/ui/animated-grid-pattern";
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
@@ -39,6 +40,7 @@ export default function RootLayout({
           {/* page has higher z-index to be on top of the grid */}
           <div className="relative z-10">{children}</div>
         </div>
+        <Toaster />
       </body>
     </html>
   );

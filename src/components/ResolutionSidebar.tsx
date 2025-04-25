@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import toast from 'react-hot-toast';
 import styles from './ResolutionSidebar.module.css';
 import { ChevronLeftIcon, ChevronRightIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { Violation, Suggestions } from '@/lib/types';
@@ -34,9 +35,59 @@ export function ResolutionSidebar({
   onExpandViolation,
   onAcceptSuggestion,
   onDismiss,
-
   resolutions,
 }: ResolutionSidebarProps) {
+  // Add state to track dismiss reason text for each violation
+  const [dismissReasons, setDismissReasons] = useState<Record<string, string>>({});
+
+  const handleDismissReasonChange = (violationId: string, value: string) => {
+    setDismissReasons(prev => ({
+      ...prev,
+      [violationId]: value
+    }));
+  };
+
+  const handleAcceptSuggestion = (violationId: string, suggestion: string) => {
+    onAcceptSuggestion(violationId, suggestion);
+    const violation = violations.find(v => v.id === violationId);
+    toast.success(
+      <div className={styles.toast}>
+        <strong>Suggestion accepted</strong>
+        <span>{violation?.type}</span>
+      </div>,
+      {
+        duration: 3000,
+        position: 'bottom-center',
+        style: {
+          background: '#F0FDF4',
+          color: '#166534',
+          border: '1px solid #BBF7D0',
+        },
+      }
+    );
+  };
+
+  const handleDismiss = (violationId: string, reason: string) => {
+    onDismiss(violationId, reason);
+    const violation = violations.find(v => v.id === violationId);
+    toast.success(
+      <div className={styles.toast}>
+        <strong>Violation dismissed</strong>
+        <span>{violation?.type}</span>
+      </div>,
+      {
+        duration: 3000,
+        position: 'bottom-center',
+        style: {
+          background: '#F3F4F6',
+          color: '#374151',
+          border: '1px solid #E5E7EB',
+        },
+      }
+    );
+    handleDismissReasonChange(violationId, '');
+  };
+
   return (
     <>
       {/* Expand Button */}
@@ -95,7 +146,11 @@ export function ResolutionSidebar({
 
             <div className={styles.content}>
               {violations.map((violation) => (
-                <div key={violation.id} className={styles.violationItem}>
+                <div 
+                  key={violation.id} 
+                  className={styles.violationItem}
+                  data-selected={violation.id === expandedViolationId}
+                >
                   <button
                     className={styles.violationHeader}
                     onClick={() => onExpandViolation(
@@ -125,16 +180,11 @@ export function ResolutionSidebar({
                       )}
                     </div>
                     <div className={styles.violationText}>
-                        &quot;{violation.text}&quot;
+                        &quot;{resolutions.find(r => r.id === violation.id)?.newText || violation.text}&quot;
                     </div>
                     <div className={styles.violationMessage}>
                       {violation.message}
                     </div>
-                    <ChevronRightIcon
-                      className={`${styles.expandIcon} ${
-                        expandedViolationId === violation.id ? styles.expanded : ''
-                      }`}
-                    />
                   </button>
 
                   <AnimatePresence>
@@ -155,7 +205,7 @@ export function ResolutionSidebar({
                             <button
                               key={index}
                               className={styles.suggestion}
-                              onClick={() => onAcceptSuggestion(violation.id, suggestion)}
+                              onClick={() => handleAcceptSuggestion(violation.id, suggestion)}
                             >
                               {suggestion}
                             </button>
@@ -175,28 +225,28 @@ export function ResolutionSidebar({
                               <textarea
                                 className={styles.dismissInput}
                                 placeholder="Enter reason for dismissal..."
-                                rows={3}                                
+                                rows={3}
+                                value={dismissReasons[violation.id] || ''}
+                                onChange={(e) => handleDismissReasonChange(violation.id, e.target.value)}
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter' && !e.shiftKey) {
                                     e.preventDefault();
-                                    const reason = e.currentTarget.value.trim();
+                                    const reason = dismissReasons[violation.id]?.trim();
                                     if (reason) {
-                                      onDismiss(violation.id, reason);
-                                      e.currentTarget.value = '';
+                                      handleDismiss(violation.id, reason);
                                     }
                                   }
                                 }}
                               />
                               <button
-                                className={styles.actionButton}
-                                onClick={(e) => {
-                                  const textarea = e.currentTarget.parentElement?.querySelector('textarea');
-                                  const reason = textarea?.value.trim();
+                                className={`${styles.actionButton} ${!dismissReasons[violation.id]?.trim() ? styles.actionButtonDisabled : ''}`}
+                                onClick={() => {
+                                  const reason = dismissReasons[violation.id]?.trim();
                                   if (reason) {
-                                    onDismiss(violation.id, reason);
-                                    if (textarea) textarea.value = '';
+                                    handleDismiss(violation.id, reason);
                                   }
                                 }}
+                                disabled={!dismissReasons[violation.id]?.trim()}
                               >
                                 Dismiss
                               </button>

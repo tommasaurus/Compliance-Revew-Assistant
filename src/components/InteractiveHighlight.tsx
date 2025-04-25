@@ -1,19 +1,12 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import styles from './InteractiveHighlight.module.css';
-
-interface Violation {
-  id: string;
-  text: string;
-  start: number;
-  end: number;
-  length: number;
-  type: string;
-  message: string;
-  severity: 'high' | 'medium' | 'low';
-}
+import { Violation } from '@/types/types';
+import { cn } from '@/lib/utils';
+import { KeyGuide } from './KeyGuide';
 
 interface Suggestions {
   [key: string]: string[];
@@ -57,33 +50,86 @@ export function InteractiveHighlight({
   const [editingViolation, setEditingViolation] = useState<string | null>(null);
   const [editText, setEditText] = useState('');
   const editInputRef = useRef<HTMLTextAreaElement>(null);
-  const [inputWidth, setInputWidth] = useState<number>(0);
-  const measureRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+  const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showKeyGuide, setShowKeyGuide] = useState(true);
   const [popoverPosition, setPopoverPosition] = useState({ 
     top: 0,
     left: 0,
     isTopSide: false 
   });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const leaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleAcceptEdit = () => {
+    if (editingViolation) {
+      const violation = violations.find(v => v.id === editingViolation);
+      const resolution = resolutions.find(r => r.id === editingViolation);
+      const originalText = resolution ? resolution.newText : (violation?.text || '');
+      
+      // Only accept if the text has actually changed
+      if (editText.trim() !== originalText.trim()) {
+        onEdit(editingViolation, editText);
+        toast.success(
+          <div className={styles.toast}>
+            <strong>Text edited</strong>
+            <span>{violation?.type}</span>
+          </div>,
+          {
+            duration: 3000,
+            position: 'bottom-center',
+            style: {
+              background: '#EFF6FF',
+              color: '#1E40AF',
+              border: '1px solid #BFDBFE',
+            },
+          }
+        );
+      }
+      setEditingViolation(null);
+      setEditText('');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingViolation(null);
+    setEditText('');
+  };
+
+  // Helper function to get the current text for a violation
+  const getViolationText = useCallback((violationId: string) => {
+    const violation = violations.find(v => v.id === violationId);
+    const resolution = resolutions.find(r => r.id === violationId);
+    return resolution ? resolution.newText : (violation?.text || '');
+  }, [violations, resolutions]);
+
+  // Combined keyboard event handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Skip if we're in a textarea
+      if (e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (e.key === 'Enter' && !e.shiftKey) {
+        if (selectedViolationId && !editingViolation) {
+          // Start editing when not in edit mode and a violation is selected
+          e.preventDefault();
+          handleStartEdit(selectedViolationId, getViolationText(selectedViolationId));
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedViolationId, editingViolation, getViolationText]);
 
   useEffect(() => {
     if (editingViolation && editInputRef.current) {
       editInputRef.current.focus();
-      editInputRef.current.select();
+      const length = editInputRef.current.value.length;
+      editInputRef.current.setSelectionRange(length, length);
     }
   }, [editingViolation]);
-
-  // Update input width when text changes
-  useEffect(() => {
-    if (measureRef.current && containerRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const textWidth = measureRef.current.offsetWidth;
-      // Limit width to container width
-      setInputWidth(Math.min(textWidth + 20, containerWidth - 40)); // 40px for padding
-    }
-  }, [editText]);
 
   // Reset hover state when sidebar closes
   useEffect(() => {
@@ -92,6 +138,10 @@ export function InteractiveHighlight({
       setHoveredViolation(null);
     }
   }, [isOpen]);
+
+  const handleDismissKeyGuide = () => {
+    setShowKeyGuide(false);    
+  };
 
   const calculatePopoverPosition = (e: React.MouseEvent<HTMLSpanElement>) => {
     const highlightRect = e.currentTarget.getBoundingClientRect();
@@ -191,36 +241,55 @@ export function InteractiveHighlight({
     setHoveredViolation(null);
   };
 
-  const handleFinishEdit = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey && editingViolation && editText.trim()) {
-      e.preventDefault(); // Prevent newline
-      onEdit(editingViolation, editText);
-      setEditingViolation(null);
-      setEditText('');
-    } else if (e.key === 'Escape') {
-      setEditingViolation(null);
-      setEditText('');
+  const renderHighlightContent = (violationId: string, text: string) => {
+    if (editingViolation === violationId) {
+      return (
+        <span className={styles.editContainer}>
+          <textarea
+            ref={editInputRef}
+            value={editText}
+            onChange={(e) => {
+              setEditText(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleAcceptEdit();
+              } else if (e.key === 'Escape') {
+                handleCancelEdit();
+              }
+            }}
+            className={styles.editInput}
+            autoFocus
+            rows={1}
+            style={{
+              width: `${text.length}ch`,
+            }}
+          />
+          <span className={styles.editButtons}>
+            <button
+              onClick={handleAcceptEdit}
+              className={cn(styles.editButton, styles.acceptButton)}
+              title="Accept (Enter)"
+            >
+              ✓
+            </button>
+            <button
+              onClick={handleCancelEdit}
+              className={cn(styles.editButton, styles.cancelButton)}
+              title="Cancel (Esc)"
+            >
+              ✕
+            </button>
+          </span>
+        </span>
+      );
     }
+    return text;
   };
 
   return (
     <div className="space-y-8">
-      {/* Hidden measure element */}
-      <div
-        ref={measureRef}
-        style={{
-          visibility: 'hidden',
-          position: 'absolute',
-          whiteSpace: 'pre-wrap',
-          fontSize: '16px',
-          lineHeight: '1.6',
-          padding: '0 0.25rem',
-          maxWidth: '100%'
-        }}
-      >
-        {editText}
-      </div>
-
       {/* Document Content */}
       <div
         ref={containerRef}
@@ -238,22 +307,7 @@ export function InteractiveHighlight({
             <React.Fragment key={violation.id}>
               {textBeforeViolation}
               {isEditing ? (
-                <textarea
-                  ref={editInputRef}
-                  value={editText}
-                  onChange={(e) => setEditText(e.target.value)}
-                  onKeyDown={handleFinishEdit}
-                  onBlur={() => {
-                    setEditingViolation(null);
-                    setEditText('');
-                  }}
-                  className={`${styles.editInput} ${getHighlightClass(violation.id)}`}
-                  style={{ 
-                    width: `${inputWidth}px`,
-                    minHeight: '24px',
-                    height: 'auto'
-                  }}
-                />
+                renderHighlightContent(violation.id, currentText)
               ) : (
                 <span
                   className={`${getHighlightClass(violation.id)} ${isSelected ? styles.selected : ''}`}
@@ -311,6 +365,22 @@ export function InteractiveHighlight({
                   className={styles.suggestionButton}
                   onClick={() => {
                     onAcceptSuggestion(hoveredViolation, suggestion);
+                    const violation = violations.find(v => v.id === hoveredViolation);
+                    toast.success(
+                      <div className={styles.toast}>
+                        <strong>Suggestion accepted</strong>
+                        <span>{violation?.type}</span>
+                      </div>,
+                      {
+                        duration: 3000,
+                        position: 'bottom-center',
+                        style: {
+                          background: '#F0FDF4',
+                          color: '#166534',
+                          border: '1px solid #BBF7D0',
+                        },
+                      }
+                    );
                     setHoveredViolation(null);
                   }}
                 >
@@ -321,6 +391,12 @@ export function InteractiveHighlight({
           </div>
         )}
       </div>
+
+      {/* Key Guide */}
+      <KeyGuide 
+        show={showKeyGuide} 
+        onDismiss={handleDismissKeyGuide}
+      />
     </div>
   );
 }
